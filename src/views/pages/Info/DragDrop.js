@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { Avatar, Button, IconButton } from '@mui/material';
+import { Autocomplete, Avatar, Button, IconButton, TextField } from '@mui/material';
 import User1 from 'assets/images/users/user-round.svg';
 import MainCard from 'ui-component/cards/MainCard';
 import * as Yup from 'yup';
@@ -29,6 +29,8 @@ import fb_icon from '../../../assets/fb_icon.png';
 import telegram_icon from '../../../assets/telegram_icon.png';
 import email_icon from '../../../assets/email_icon.png';
 import contact_icon from '../../../assets/contact_icon.jpg';
+import phone_icon from '../../../assets/phone_icon.jpg';
+import Modal from 'components/Modal';
 
 // const UID = 'iGzjBkpjh9eAN0SVGJN7';
 const getIcon = (type) => {
@@ -48,6 +50,32 @@ const getIcon = (type) => {
     }
 };
 
+const TYPE_CONTACTS = [
+    { id: 1, type: 'zalo', label: 'Zalo', icon: zalo_icon },
+    { id: 2, type: 'facebook', label: 'Facebook', icon: fb_icon },
+    { id: 3, type: 'email', label: 'Email', icon: email_icon },
+    { id: 4, type: 'telegram', label: 'Telegram', icon: telegram_icon },
+    { id: 5, type: 'phone', label: 'Phone', icon: phone_icon },
+    { id: 6, type: 'other', label: 'Other', icon: contact_icon }
+];
+
+const getValue = (type) => {
+    switch (type) {
+        case 'zalo':
+            return TYPE_CONTACTS[0];
+        case 'facebook':
+            return TYPE_CONTACTS[1];
+        case 'email':
+            return TYPE_CONTACTS[2];
+        case 'telegram':
+            return TYPE_CONTACTS[3];
+        case 'phone':
+            return TYPE_CONTACTS[4];
+        default:
+            return TYPE_CONTACTS[5];
+    }
+};
+
 function DragDrop({ ...others }) {
     const theme = useTheme();
 
@@ -64,6 +92,8 @@ function DragDrop({ ...others }) {
     const [editInfo, setEditInfo] = useState(false);
     const [words, setWords] = useState(['Hello', 'Hi', 'How are you', 'Cool']);
     const [image, setImage] = useState();
+    const modalRef = useRef(null);
+    const [contactEdit, setContactEdit] = useState(null);
 
     const onChangeImage = (e) => {
         setImage(e.target.files[0]);
@@ -110,8 +140,19 @@ function DragDrop({ ...others }) {
         setContacts({ ...contacts, links: [...links] });
     };
 
-    const editLink = (id) => {
-        console.log(id);
+    const editLink = (item) => {
+        console.log(item);
+        setContactEdit(item);
+        console.log(item);
+        modalRef.current.setOpen(true);
+    };
+
+    const onChangeType = (type) => {
+        console.log(type);
+    };
+
+    const onChangeLink = (e) => {
+        console.log(e.target.value);
     };
 
     useEffect(() => {
@@ -296,6 +337,45 @@ function DragDrop({ ...others }) {
                                 </Grid>
                             ))}
                         <Addition contacts={contacts} setContacts={setContacts} uid={UID} />
+                        <Modal ref={modalRef} title="Edit contact info">
+                            {contactEdit && (
+                                <Grid container alignItems={'center'} spacing={2}>
+                                    <Grid item md={5}>
+                                        <Autocomplete
+                                            id="country-select-demo"
+                                            sx={{ width: 300 }}
+                                            options={TYPE_CONTACTS}
+                                            autoHighlight
+                                            getOptionLabel={(option) => option.label}
+                                            renderOption={(props, option) => (
+                                                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                                    <img loading="lazy" width="20" src={option.icon} alt="" />
+                                                    {option.label}
+                                                </Box>
+                                            )}
+                                            defaultValue={getValue(contactEdit.type)}
+                                            onChange={(event, newInputValue) => {
+                                                console.log(event);
+                                                console.log(newInputValue);
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Choose a type of contact"
+                                                    inputProps={{
+                                                        ...params.inputProps,
+                                                        autoComplete: 'new-password' // disable autocomplete and autofill
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item md={7}>
+                                        <TextField id="outlined-error-helper-text" label="Link" defaultValue={contactEdit.url} fullWidth />
+                                    </Grid>
+                                </Grid>
+                            )}
+                        </Modal>
                     </div>
                 </div>
             </MainCard>
