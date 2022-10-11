@@ -1,0 +1,22 @@
+.fHsJuh {
+  position: fixed;
+  inset: 0px;
+  z-index: -1;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: rgb(209, 246, 255);
+  background-image: url("../../../assets/background-mobile.png");
+}
+
+@media screen and (min-width: 576px) {
+  .fHsJuh {
+    background-image: url("../../../assets/background-mobile.png");
+  }
+}
+
+@media screen and (min-width: 767px) {
+  .fHsJuh {
+    background-image: url("../../../assets/default_background_horizontal.png");
+  }
+}
